@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winkelarten - Karteikarten & Spiele</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --light: #121212;
+            --dark: #f8f9fa;
+            --gray: #adb5bd;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding-bottom: 60px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid white;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary-dark);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-list a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .nav-list a:hover,
+        .nav-list a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main Content */
+        .main-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .intro-text {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            background-color: var(--light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* Karteikarten */
+        .flashcards-container {
+            margin-bottom: 3rem;
+        }
+
+        .flashcards-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.7rem 1.5rem;
+            background-color: var(--light);
+            color: var(--dark);
+            border: 2px solid var(--primary);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .flashcards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .flashcard {
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            height: 350px;
+            perspective: 1000px;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front,
+        .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+
+        .flashcard-front {
+            justify-content: space-between;
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+            overflow-y: auto;
+        }
+
+        .flashcard-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .scheitelwinkel {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .nebenwinkel {
+            background-color: rgba(114, 9, 183, 0.2);
+            color: var(--secondary);
+        }
+
+        .stufenwinkel {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
+        .wechselwinkel {
+            background-color: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+        }
+
+        .flashcard-img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            margin: 1rem 0;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+        }
+
+        .dark-mode .flashcard-img {
+            background-color: #2a2a2a;
+        }
+
+        .flashcard-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .flashcard-answer {
+            margin-bottom: 1rem;
+        }
+
+        .flashcard-hint {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-style: italic;
+            margin-top: auto;
+        }
+
+        /* Games */
+        .games-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .game {
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .game-header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .game-body {
+            padding: 1.5rem;
+        }
+
+        .game-body p {
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a08a1;
+        }
+
+        /* Spiel-spezifische Stile */
+        .angle-match-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .angle-card {
+            padding: 1rem;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: grab;
+            transition: var(--transition);
+        }
+
+        .angle-card.dragging {
+            opacity: 0.7;
+        }
+
+        .match-dropzone {
+            padding: 1rem;
+            background-color: rgba(114, 9, 183, 0.1);
+            border-radius: var(--border-radius);
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .match-dropzone.active {
+            background-color: rgba(114, 9, 183, 0.2);
+            border: 2px dashed var(--secondary);
+        }
+
+        .match-dropzone.correct {
+            background-color: rgba(76, 201, 240, 0.3);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-option {
+            padding: 0.8rem;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quiz-option:hover {
+            background-color: rgba(67, 97, 238, 0.2);
+        }
+
+        .quiz-option.correct {
+            background-color: rgba(76, 201, 240, 0.3);
+        }
+
+        .quiz-option.wrong {
+            background-color: rgba(247, 37, 133, 0.2);
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background-color: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card-front,
+        .memory-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .memory-card-front {
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .memory-card-back {
+            background-color: white;
+            color: var(--dark);
+            transform: rotateY(180deg);
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .dark-mode .memory-card-back {
+            background-color: var(--light);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--gray);
+            border-top: 1px solid var(--gray);
+            margin-top: 3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-list {
+                gap: 0.5rem;
+            }
+            
+            .games-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .flashcards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+            
+            .memory-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo h1 {
+                font-size: 1.3rem;
+            }
+            
+            .angle-match-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .memory-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-shapes"></i>
+                <h1>Winkelarten - Karteikarten & Spiele</h1>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="#karteikarten" class="active">Karteikarten</a></li>
+                <li><a href="#spiele">Spiele</a></li>
+                <li><a href="#ueber">Über Winkel</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <section id="karteikarten">
+            <h2 class="main-title">Interaktive Karteikarten</h2>
+            <p class="intro-text">Klicke auf eine Karteikarte, um sie umzudrehen und die Definition, Eigenschaften und Beispiele zu sehen. Filtere nach Winkelarten, um gezielt zu lernen.</p>
+            
+            <div class="flashcards-controls">
+                <button class="filter-btn active" data-filter="all">Alle Winkel</button>
+                <button class="filter-btn" data-filter="scheitelwinkel">Scheitelwinkel</button>
+                <button class="filter-btn" data-filter="nebenwinkel">Nebenwinkel</button>
+                <button class="filter-btn" data-filter="stufenwinkel">Stufenwinkel</button>
+                <button class="filter-btn" data-filter="wechselwinkel">Wechselwinkel</button>
+            </div>
+            
+            <div class="flashcards-grid" id="flashcardsContainer">
+                <!-- Karteikarten werden via JavaScript eingefügt -->
+            </div>
+        </section>
+        
+        <section id="spiele">
+            <h2 class="main-title">Lernspiele</h2>
+            <p class="intro-text">Teste dein Wissen mit diesen interaktiven Spielen. Spiele allein oder fordere Freunde heraus!</p>
+            
+            <div class="games-container">
+                <!-- Spiel 1: Winkel-Quiz -->
+                <div class="game">
+                    <div class="game-header">
+                        <h3><i class="fas fa-question-circle"></i> Winkel-Quiz</h3>
+                        <span id="quizScore">Punkte: 0/0</span>
+                    </div>
+                    <div class="game-body">
+                        <p id="quizQuestion">Welche Winkelart beschreibt zwei Winkel, die sich zu 180° ergänzen?</p>
+                        <div class="quiz-options" id="quizOptions">
+                            <div class="quiz-option" data-correct="false">Scheitelwinkel</div>
+                            <div class="quiz-option" data-correct="true">Nebenwinkel</div>
+                            <div class="quiz-option" data-correct="false">Stufenwinkel</div>
+                            <div class="quiz-option" data-correct="false">Wechselwinkel</div>
+                        </div>
+                        <button class="btn" id="nextQuiz">Nächste Frage</button>
+                        <div class="score-display" id="quizFeedback"></div>
+                    </div>
+                </div>
+                
+                <!-- Spiel 2: Winkel-Memory -->
+                <div class="game">
+                    <div class="game-header">
+                        <h3><i class="fas fa-brain"></i> Winkel-Memory</h3>
+                        <span id="memoryScore">Versuche: 0</span>
+                    </div>
+                    <div class="game-body">
+                        <p>Finde die passenden Paare aus Winkelart und Definition!</p>
+                        <div class="memory-grid" id="memoryGame">
+                            <!-- Memory-Karten werden via JavaScript eingefügt -->
+                        </div>
+                        <button class="btn" id="resetMemory">Neues Spiel</button>
+                        <div class="score-display" id="memoryFeedback"></div>
+                    </div>
+                </div>
+                
+                <!-- Spiel 3: Winkel zuordnen -->
+                <div class="game">
+                    <div class="game-header">
+                        <h3><i class="fas fa-puzzle-piece"></i> Winkel zuordnen</h3>
+                        <span id="matchScore">Richtig: 0/4</span>
+                    </div>
+                    <div class="game-body">
+                        <p>Ziehe die Winkelbezeichnungen auf die richtigen Definitionen!</p>
+                        <div class="angle-match-container">
+                            <div class="angle-card" draggable="true" data-angle="scheitelwinkel">Scheitelwinkel</div>
+                            <div class="angle-card" draggable="true" data-angle="nebenwinkel">Nebenwinkel</div>
+                            <div class="angle-card" draggable="true" data-angle="stufenwinkel">Stufenwinkel</div>
+                            <div class="angle-card" draggable="true" data-angle="wechselwinkel">Wechselwinkel</div>
+                            
+                            <div class="match-dropzone" data-target="scheitelwinkel">Gegenüberliegende Winkel an einer Geradenkreuzung</div>
+                            <div class="match-dropzone" data-target="nebenwinkel">Zwei Winkel, die sich zu 180° ergänzen</div>
+                            <div class="match-dropzone" data-target="stufenwinkel">Gleich große Winkel bei Parallelen (F-Winkel)</div>
+                            <div class="match-dropzone" data-target="wechselwinkel">Gleich große Winkel bei Parallelen (Z-Winkel)</div>
+                        </div>
+                        <button class="btn" id="checkMatch">Überprüfen</button>
+                        <button class="btn btn-secondary" id="resetMatch">Zurücksetzen</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="ueber">
+            <h2 class="main-title">Über Winkelarten</h2>
+            <div class="intro-text">
+                <h3>Zusammenfassung der wichtigsten Winkelarten</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div style="padding: 1rem; background: rgba(67, 97, 238, 0.1); border-radius: var(--border-radius);">
+                        <h4>Scheitelwinkel</h4>
+                        <p>Wenn sich zwei Geraden schneiden, liegen sich Scheitelwinkel gegenüber. Sie sind immer gleich groß.</p>
+                        <p><strong>Beispiel:</strong> α = γ</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(114, 9, 183, 0.1); border-radius: var(--border-radius);">
+                        <h4>Nebenwinkel</h4>
+                        <p>Zwei Winkel, die an einer Geradenkreuzung nebeneinander liegen. Ihre Summe beträgt immer 180°.</p>
+                        <p><strong>Beispiel:</strong> α + β = 180°</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(76, 201, 240, 0.1); border-radius: var(--border-radius);">
+                        <h4>Stufenwinkel</h4>
+                        <p>Bei parallelen Geraden sind Stufenwinkel (F-Winkel) gleich groß. Sie liegen auf derselben Seite.</p>
+                        <p><strong>Beispiel:</strong> α₁ = α₂</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(248, 150, 30, 0.1); border-radius: var(--border-radius);">
+                        <h4>Wechselwinkel</h4>
+                        <p>Bei parallelen Geraden sind Wechselwinkel (Z-Winkel) gleich groß. Sie liegen auf verschiedenen Seiten.</p>
+                        <p><strong>Beispiel:</strong> α₁ = γ₂</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <h4>Tipps zum Lernen:</h4>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Verwende die Karteikarten täglich für 10 Minuten</li>
+                        <li>Spiele die Lernspiele, um dein Wissen zu festigen</li>
+                        <li>Zeichne selbst Geradenkreuzungen und beschrifte die Winkel</li>
+                        <li>Suche in deiner Umgebung nach Beispielen für Winkelarten</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="container">
+        <p>Interaktive Lernwebseite zu Winkelarten | Mit Karteikarten und Spielen</p>
+        <p>Bilder von OpenClipart-Vectors, Clker-Free-Vector-Images auf Pixabay</p>
+    </footer>
+
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        });
+
+        // Navigation smooth scroll
+        document.querySelectorAll('.nav-list a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active link
+                document.querySelectorAll('.nav-list a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Karteikarten Daten
+        const flashcardsData = [
+            {
+                id: 1,
+                category: "scheitelwinkel",
+                question: "Was sind Scheitelwinkel?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Angles_formed_by_intersecting_lines.svg/300px-Angles_formed_by_intersecting_lines.svg.png",
+                answer: "Scheitelwinkel sind zwei Winkel, die sich an einer Geradenkreuzung gegenüberliegen. Sie haben den gleichen Scheitelpunkt und sind immer gleich groß.",
+                properties: "• Gleicher Scheitelpunkt<br>• Gegenüberliegend<br>• Immer gleich groß<br>• Beispiel: α = γ",
+                examples: "An einer Straßenkreuzung bilden sich Scheitelwinkel zwischen den Fahrbahnen."
+            },
+            {
+                id: 2,
+                category: "scheitelwinkel",
+                question: "Wie erkennt man Scheitelwinkel?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Angle_vertex.svg/300px-Angle_vertex.svg.png",
+                answer: "Scheitelwinkel erkennt man daran, dass sie sich an der Kreuzung zweier Geraden direkt gegenüberliegen. Sie bilden ein 'X'.",
+                properties: "• Bilden ein 'X'<br>• Teilen sich den Scheitelpunkt<br>• Sind nie benachbart<br>• Immer paarweise vorhanden",
+                examples: "Wenn sich zwei Stäbe kreuzen, bilden die gegenüberliegenden Winkel Scheitelwinkel."
+            },
+            {
+                id: 3,
+                category: "nebenwinkel",
+                question: "Was sind Nebenwinkel?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Adjacent_angles.svg/300px-Adjacent_angles.svg.png",
+                answer: "Nebenwinkel sind zwei Winkel, die an einer Geradenkreuzung nebeneinander liegen. Sie teilen sich einen Schenkel und ergänzen sich zu 180°.",
+                properties: "• Benachbart<br>• Teilen sich einen Schenkel<br>• Summe = 180°<br>• Beispiel: α + β = 180°",
+                examples: "An einer geraden Straße bilden die beiden Winkel auf einer Seite Nebenwinkel."
+            },
+            {
+                id: 4,
+                category: "nebenwinkel",
+                question: "Wie berechnet man Nebenwinkel?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Supplementary_angles.svg/300px-Supplementary_angles.svg.png",
+                answer: "Wenn ein Nebenwinkel gegeben ist, berechnet man den anderen durch Subtraktion von 180°. Ist α = 70°, dann ist β = 180° - 70° = 110°.",
+                properties: "• α + β = 180°<br>• β = 180° - α<br>• Liegen auf einer Geraden<br>• Bilden zusammen einen gestreckten Winkel",
+                examples: "Wenn eine Leiter an einer Wand lehnt, bilden Boden und Leiter einen Winkel, der mit dem Winkel zwischen Leiter und Wand Nebenwinkel sind."
+            },
+            {
+                id: 5,
+                category: "stufenwinkel",
+                question: "Was sind Stufenwinkel?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Parallel_lines_with_transversal.svg/300px-Parallel_lines_with_transversal.svg.png",
+                answer: "Stufenwinkel (auch F-Winkel) entstehen, wenn zwei parallele Geraden von einer dritten geschnitten werden. Sie liegen auf derselben Seite und sind gleich groß.",
+                properties: "• Bei parallelen Geraden<br>• Gleiche Größe<br>• Liegen auf gleicher Seite<br>• Formen ein 'F'",
+                examples: "Bei einer Treppe sind die Stufen parallel - die Winkel an den Stufenkanten bilden Stufenwinkel."
+            },
+            {
+                id: 6,
+                category: "stufenwinkel",
+                question: "Wie erkennt man Stufenwinkel?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Angle_relations_parallel_lines.svg/300px-Angle_relations_parallel_lines.svg.png",
+                answer: "Stufenwinkel erkennt man an ihrer 'F-Form'. Sie liegen auf derselben Seite der Schnittgeraden und auf derselben Seite der Parallelen.",
+                properties: "• Bilden ein 'F'<br>• Nur bei Parallelen gleich groß<br>• Immer paarweise<br>• Beispiel: α₁ = α₂",
+                examples: "Bei einem Geländer mit parallelen Stäben bilden sich Stufenwinkel."
+            },
+            {
+                id: 7,
+                category: "wechselwinkel",
+                question: "Was sind Wechselwinkel?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Angle_relations.svg/300px-Angle_relations.svg.png",
+                answer: "Wechselwinkel (auch Z-Winkel) entstehen bei zwei parallelen Geraden und einer Schnittgeraden. Sie liegen auf verschiedenen Seiten und sind gleich groß.",
+                properties: "• Bei parallelen Geraden<br>• Gleiche Größe<br>• Liegen auf verschiedenen Seiten<br>• Formen ein 'Z'",
+                examples: "Bei einer Zick-Zack-Linie mit parallelen Strecken bilden sich Wechselwinkel."
+            },
+            {
+                id: 8,
+                category: "wechselwinkel",
+                question: "Wie unterscheiden sich Wechsel- und Stufenwinkel?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Parallel_lines_angle_problem.svg/300px-Parallel_lines_angle_problem.svg.png",
+                answer: "Stufenwinkel liegen auf derselben Seite (F-Form), Wechselwinkel auf verschiedenen Seiten (Z-Form). Beide sind bei Parallelen gleich groß.",
+                properties: "• Stufenwinkel: gleiche Seite, F-Form<br>• Wechselwinkel: verschiedene Seiten, Z-Form<br>• Bei Parallelen gleich groß<br>• Beispiel: α₁ = γ₂",
+                examples: "Bei einem Bahngleis mit parallelen Schienen bilden sich sowohl Stufen- als auch Wechselwinkel."
+            }
+        ];
+
+        // Karteikarten rendern
+        function renderFlashcards(filter = "all") {
+            const container = document.getElementById("flashcardsContainer");
+            container.innerHTML = "";
+            
+            const filteredCards = filter === "all" 
+                ? flashcardsData 
+                : flashcardsData.filter(card => card.category === filter);
+            
+            filteredCards.forEach(card => {
+                const flashcard = document.createElement("div");
+                flashcard.className = "flashcard";
+                flashcard.dataset.category = card.category;
+                
+                flashcard.innerHTML = `
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div>
+                                <span class="flashcard-category ${card.category}">${getCategoryName(card.category)}</span>
+                                <p class="flashcard-question">${card.question}</p>
+                            </div>
+                            <img src="${card.image}" alt="${card.category}" class="flashcard-img" onerror="this.src='https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'">
+                            <p class="flashcard-hint">Klicken zum Umdrehen</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <span class="flashcard-category ${card.category}">${getCategoryName(card.category)}</span>
+                            <p class="flashcard-answer"><strong>Antwort:</strong> ${card.answer}</p>
+                            <p class="flashcard-answer"><strong>Eigenschaften:</strong><br>${card.properties}</p>
+                            <p class="flashcard-answer"><strong>Beispiel:</strong> ${card.examples}</p>
+                            <p class="flashcard-hint">Klicken zum Zurückdrehen</p>
+                        </div>
+                    </div>
+                `;
+                
+                flashcard.addEventListener("click", function() {
+                    this.classList.toggle("flipped");
+                });
+                
+                container.appendChild(flashcard);
+            });
+        }
+        
+        function getCategoryName(category) {
+            const names = {
+                "scheitelwinkel": "Scheitelwinkel",
+                "nebenwinkel": "Nebenwinkel",
+                "stufenwinkel": "Stufenwinkel",
+                "wechselwinkel": "Wechselwinkel"
+            };
+            return names[category] || category;
+        }
+        
+        // Filter-Buttons für Karteikarten
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+            btn.addEventListener("click", function() {
+                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+                renderFlashcards(this.dataset.filter);
+            });
+        });
+        
+        // Quiz Spiel
+        let quizScore = 0;
+        let quizTotal = 0;
+        let currentQuestion = 0;
+        
+        const quizQuestions = [
+            {
+                question: "Welche Winkelart beschreibt zwei Winkel, die sich zu 180° ergänzen?",
+                options: ["Scheitelwinkel", "Nebenwinkel", "Stufenwinkel", "Wechselwinkel"],
+                correct: 1
+            },
+            {
+                question: "Wenn α = 50°, wie groß ist dann der Scheitelwinkel zu α?",
+                options: ["30°", "50°", "130°", "180°"],
+                correct: 1
+            },
+            {
+                question: "Welche Winkel sind bei parallelen Geraden gleich groß?",
+                options: ["Nur Stufenwinkel", "Nur Wechselwinkel", "Stufen- und Wechselwinkel", "Weder noch"],
+                correct: 2
+            },
+            {
+                question: "Wie nennt man Wechselwinkel auch?",
+                options: ["F-Winkel", "X-Winkel", "Z-Winkel", "U-Winkel"],
+                correct: 2
+            },
+            {
+                question: "Wenn ein Winkel 120° misst, wie groß ist sein Nebenwinkel?",
+                options: ["30°", "60°", "90°", "120°"],
+                correct: 1
+            },
+            {
+                question: "Was gilt für Scheitelwinkel?",
+                options: ["Sie sind immer 90°", "Sie sind gleich groß", "Sie ergänzen sich zu 180°", "Sie kommen nur bei Parallelen vor"],
+                correct: 1
+            },
+            {
+                question: "Welche Winkelart wird auch F-Winkel genannt?",
+                options: ["Scheitelwinkel", "Nebenwinkel", "Stufenwinkel", "Wechselwinkel"],
+                correct: 2
+            },
+            {
+                question: "Wenn zwei Geraden sich schneiden, wie viele Scheitelwinkelpaare entstehen?",
+                options: ["1", "2", "3", "4"],
+                correct: 1
+            }
+        ];
+        
+        function loadQuizQuestion() {
+            const question = quizQuestions[currentQuestion];
+            document.getElementById('quizQuestion').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement("div");
+                optionElement.className = "quiz-option";
+                optionElement.textContent = option;
+                optionElement.dataset.correct = index === question.correct;
+                
+                optionElement.addEventListener("click", function() {
+                    if (this.dataset.correct === "true") {
+                        this.classList.add("correct");
+                        quizScore++;
+                        document.getElementById('quizFeedback').textContent = "Richtig! 🎉";
+                        document.getElementById('quizFeedback').style.color = "#4cc9f0";
+                    } else {
+                        this.classList.add("wrong");
+                        document.getElementById('quizFeedback').textContent = "Leider falsch 😞";
+                        document.getElementById('quizFeedback').style.color = "#f72585";
+                    }
+                    
+                    // Deaktiviere alle Optionen nach der Auswahl
+                    document.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.style.pointerEvents = 'none';
+                        if (opt.dataset.correct === "true") {
+                            opt.classList.add("correct");
+                        }
+                    });
+                    
+                    quizTotal++;
+                    document.getElementById('quizScore').textContent = `Punkte: ${quizScore}/${quizTotal}`;
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            document.getElementById('quizFeedback').textContent = "";
+        }
+        
+        document.getElementById('nextQuiz').addEventListener('click', function() {
+            currentQuestion = (currentQuestion + 1) % quizQuestions.length;
+            loadQuizQuestion();
+        });
+        
+        // Memory Spiel
+        const memoryCards = [
+            { id: 1, type: "scheitelwinkel", content: "Scheitelwinkel", match: "Gegenüberliegende Winkel" },
+            { id: 2, type: "scheitelwinkel", content: "Gegenüberliegende Winkel", match: "Scheitelwinkel" },
+            { id: 3, type: "nebenwinkel", content: "Nebenwinkel", match: "Summe = 180°" },
+            { id: 4, type: "nebenwinkel", content: "Summe = 180°", match: "Nebenwinkel" },
+            { id: 5, type: "stufenwinkel", content: "Stufenwinkel", match: "F-Winkel" },
+            { id: 6, type: "stufenwinkel", content: "F-Winkel", match: "Stufenwinkel" },
+            { id: 7, type: "wechselwinkel", content: "Wechselwinkel", match: "Z-Winkel" },
+            { id: 8, type: "wechselwinkel", content: "Z-Winkel", match: "Wechselwinkel" }
+        ];
+        
+        let memoryAttempts = 0;
+        let flippedCards = [];
+        let matchedPairs = 0;
+        
+        function initMemoryGame() {
+            const container = document.getElementById("memoryGame");
+            container.innerHTML = "";
+            flippedCards = [];
+            matchedPairs = 0;
+            memoryAttempts = 0;
+            
+            document.getElementById("memoryScore").textContent = "Versuche: 0";
+            document.getElementById("memoryFeedback").textContent = "";
+            
+            // Karten mischen
+            const shuffledCards = [...memoryCards].sort(() => Math.random() - 0.5);
+            
+            shuffledCards.forEach(card => {
+                const memoryCard = document.createElement("div");
+                memoryCard.className = "memory-card";
+                memoryCard.dataset.id = card.id;
+                memoryCard.dataset.type = card.type;
+                memoryCard.dataset.content = card.content;
+                memoryCard.dataset.match = card.match;
+                
+                memoryCard.innerHTML = `
+                    <div class="memory-card-front">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="memory-card-back">
+                        ${card.content}
+                    </div>
+                `;
+                
+                memoryCard.addEventListener("click", flipMemoryCard);
+                container.appendChild(memoryCard);
+            });
+        }
+        
+        function flipMemoryCard() {
+            if (flippedCards.length < 2 && !this.classList.contains("flipped")) {
+                this.classList.add("flipped");
+                flippedCards.push(this);
+                
+                if (flippedCards.length === 2) {
+                    memoryAttempts++;
+                    document.getElementById("memoryScore").textContent = `Versuche: ${memoryAttempts}`;
+                    
+                    const card1 = flippedCards[0];
+                    const card2 = flippedCards[1];
+                    
+                    // Prüfe auf Match
+                    if (card1.dataset.type === card2.dataset.type && 
+                        card1.dataset.id !== card2.dataset.id) {
+                        // Match gefunden
+                        setTimeout(() => {
+                            card1.style.visibility = "hidden";
+                            card2.style.visibility = "hidden";
+                            flippedCards = [];
+                            matchedPairs++;
+                            
+                            if (matchedPairs === 4) {
+                                document.getElementById("memoryFeedback").textContent = `Gewonnen! Du hast alle Paare in ${memoryAttempts} Versuchen gefunden!`;
+                                document.getElementById("memoryFeedback").style.color = "#4cc9f0";
+                            }
+                        }, 500);
+                    } else {
+                        // Kein Match
+                        setTimeout(() => {
+                            card1.classList.remove("flipped");
+                            card2.classList.remove("flipped");
+                            flippedCards = [];
+                        }, 1000);
+                    }
+                }
+            }
+        }
+        
+        document.getElementById("resetMemory").addEventListener("click", initMemoryGame);
+        
+        // Zuordnungsspiel
+        let matchedItems = 0;
+        
+        function initMatchGame() {
+            matchedItems = 0;
+            document.getElementById("matchScore").textContent = "Richtig: 0/4";
+            
+            // Zurücksetzen der Dropzonen
+            document.querySelectorAll(".match-dropzone").forEach(zone => {
+                zone.classList.remove("correct");
+                zone.innerHTML = zone.dataset.target === "scheitelwinkel" ? "Gegenüberliegende Winkel an einer Geradenkreuzung" :
+                                 zone.dataset.target === "nebenwinkel" ? "Zwei Winkel, die sich zu 180° ergänzen" :
+                                 zone.dataset.target === "stufenwinkel" ? "Gleich große Winkel bei Parallelen (F-Winkel)" :
+                                 "Gleich große Winkel bei Parallelen (Z-Winkel)";
+            });
+            
+            // Drag & Drop Events
+            const draggables = document.querySelectorAll(".angle-card");
+            const dropzones = document.querySelectorAll(".match-dropzone");
+            
+            draggables.forEach(draggable => {
+                draggable.addEventListener("dragstart", dragStart);
+                draggable.addEventListener("dragend", dragEnd);
+            });
+            
+            dropzones.forEach(zone => {
+                zone.addEventListener("dragover", dragOver);
+                zone.addEventListener("dragenter", dragEnter);
+                zone.addEventListener("dragleave", dragLeave);
+                zone.addEventListener("drop", dragDrop);
+            });
+        }
+        
+        function dragStart(e) {
+            this.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", this.dataset.angle);
+        }
+        
+        function dragEnd() {
+            this.classList.remove("dragging");
+        }
+        
+        function dragOver(e) {
+            e.preventDefault();
+        }
+        
+        function dragEnter(e) {
+            e.preventDefault();
+            this.classList.add("active");
+        }
+        
+        function dragLeave() {
+            this.classList.remove("active");
+        }
+        
+        function dragDrop(e) {
+            e.preventDefault();
+            this.classList.remove("active");
+            
+            const draggedAngle = e.dataTransfer.getData("text/plain");
+            const targetAngle = this.dataset.target;
+            
+            if (draggedAngle === targetAngle) {
+                this.classList.add("correct");
+                this.innerHTML = `<strong>${draggedAngle.charAt(0).toUpperCase() + draggedAngle.slice(1)}</strong> - Richtig!`;
+                matchedItems++;
+                document.getElementById("matchScore").textContent = `Richtig: ${matchedItems}/4`;
+                
+                if (matchedItems === 4) {
+                    setTimeout(() => {
+                        alert("Super! Alle Winkel sind richtig zugeordnet!");
+                    }, 300);
+                }
+            } else {
+                this.innerHTML = "Falsch! Versuche es erneut.";
+                setTimeout(() => {
+                    this.innerHTML = this.dataset.target === "scheitelwinkel" ? "Gegenüberliegende Winkel an einer Geradenkreuzung" :
+                                     this.dataset.target === "nebenwinkel" ? "Zwei Winkel, die sich zu 180° ergänzen" :
+                                     this.dataset.target === "stufenwinkel" ? "Gleich große Winkel bei Parallelen (F-Winkel)" :
+                                     "Gleich große Winkel bei Parallelen (Z-Winkel)";
+                }, 1000);
+            }
+        }
+        
+        document.getElementById("checkMatch").addEventListener("click", function() {
+            if (matchedItems === 4) {
+                alert("Perfekt! Alle Zuordnungen sind richtig!");
+            } else {
+                alert(`Du hast ${matchedItems} von 4 richtig zugeordnet. Versuche weiter!`);
+            }
+        });
+        
+        document.getElementById("resetMatch").addEventListener("click", initMatchGame);
+        
+        // Initialisierung
+        window.addEventListener("DOMContentLoaded", () => {
+            renderFlashcards();
+            loadQuizQuestion();
+            initMemoryGame();
+            initMatchGame();
+        });
+    </script>
+</body>
+</html>
